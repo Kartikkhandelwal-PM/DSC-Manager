@@ -1,0 +1,8 @@
+We are KDK software https://www.kdksoftware.com/ need to build a feature within our webapplication which is DSC Management
+with the help of this user can save their DSC details and we provide them facility to alert them before expiry.
+the flow as i can imagine is when user login to our application their will be a feature of DSC Management where there will be an option of add DSC
+once user click on that, we will ask them to insert the token. and when user plug it, their DSC details get saved in the system and user can see the saved details. 
+also if the DSC is about to expire we will inform them and we are also planning to integrate with capricorn for the renewal. so user can also renew. 
+now there can be lots of use cases corner cases we also need to cover. 
+user can also add the location of their DSC and the details they need to enter manually. 
+our users are basically CAs, tax practitioners, advocates, bug enterpises they may have multiple DSCs so user can manage DSCs properly. 
