@@ -297,7 +297,7 @@ function StepDetect({ onDetected, onBack }) {
           </div>
         </div>
         <a
-          href={OS === 'Windows' ? '/downloads/KDK-DSC-Agent-Setup.zip' : '/downloads/KDK-DSC-Agent.dmg'}
+          href={OS === 'Windows' ? 'https://github.com/Kartikkhandelwal-PM/DSC-Manager/releases/download/v1.0.0/KDK-DSC-Agent-Setup.zip' : 'https://github.com/Kartikkhandelwal-PM/DSC-Manager/releases/download/v1.0.0/KDK-DSC-Agent.dmg'}
           className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-white text-sm font-bold mb-4 transition-all active:scale-95"
           style={{ background: 'linear-gradient(135deg, #1d4ed8, #3b82f6)', boxShadow: '0 2px 8px rgba(29,78,216,0.3)' }}
         >

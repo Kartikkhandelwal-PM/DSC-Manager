@@ -376,7 +376,7 @@ function Sidebar({ clients, dscs, activeClient, onClientSelect, threshold, onOpe
 
       {/* Brand */}
       <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)', flexShrink: 0 }}>
-        <img src="/logo3.png" alt="KDK Software DSC Manager" style={{ width: '100%', height: 'auto', objectFit: 'contain', display: 'block' }} />
+        <img src={`${import.meta.env.BASE_URL}logo3.png`} alt="KDK Software DSC Manager" style={{ width: '100%', height: 'auto', objectFit: 'contain', display: 'block' }} />
       </div>
 
       {/* Search */}
