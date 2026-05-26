@@ -296,16 +296,12 @@ function StepDetect({ onDetected, onBack }) {
             <p className="text-xs text-slate-500">Background service · {OS}</p>
           </div>
         </div>
-        <a
-          href={OS === 'Windows' ? 'https://github.com/Kartikkhandelwal-PM/DSC-Manager/releases/download/v1.0.0/KDK-DSC-Agent-Setup.zip' : 'https://github.com/Kartikkhandelwal-PM/DSC-Manager/releases/download/v1.0.0/KDK-DSC-Agent.dmg'}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-white text-sm font-bold mb-4 transition-all active:scale-95"
-          style={{ background: 'linear-gradient(135deg, #1d4ed8, #3b82f6)', boxShadow: '0 2px 8px rgba(29,78,216,0.3)' }}
-        >
+        <div className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-white text-sm font-bold mb-4" style={{ background: 'linear-gradient(135deg, #1d4ed8, #3b82f6)', opacity: 0.6 }}>
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
           </svg>
-          Download for {OS}
-        </a>
+          Download for {OS} · Coming Soon
+        </div>
         <div className="space-y-2.5">
           {[
             OS === 'Windows' ? 'Extract the downloaded ZIP and run KDK DSC Agent.exe' : 'Open the downloaded .dmg and drag to Applications',
@@ -320,7 +316,7 @@ function StepDetect({ onDetected, onBack }) {
         </div>
       </div>
 
-      <button onClick={startPolling} className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl transition-colors mb-2">
+      <button onClick={() => setS('ready')} className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl transition-colors mb-2">
         I've installed it — Connect →
       </button>
       <button onClick={onBack} className="w-full py-2 text-slate-400 hover:text-slate-600 text-xs font-medium rounded-xl transition-colors">
