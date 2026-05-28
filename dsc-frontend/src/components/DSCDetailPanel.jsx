@@ -23,6 +23,10 @@ function ReadField({ label, value, mono, span }) {
 
 /* ── Editable field ── */
 function EditField({ label, name, value, onChange, placeholder, textarea, type, readOnly, required, children }) {
+  const [reveal, setReveal] = useState(false);
+  const isPassword = type === 'password';
+  const resolvedType = isPassword ? (reveal ? 'text' : 'password') : (type || 'text');
+
   return (
     <div>
       <label className="flex items-center gap-0.5 text-[10px] font-semibold text-slate-400 uppercase tracking-widest mb-1">
@@ -30,8 +34,33 @@ function EditField({ label, name, value, onChange, placeholder, textarea, type, 
         {required && <span className="text-red-400 font-bold not-uppercase normal-case tracking-normal text-[11px] leading-none">*</span>}
       </label>
       {readOnly ? (
-        <div className="w-full px-3 py-1.5 text-sm rounded-lg bg-slate-50 border border-slate-200/70 text-slate-800 font-medium leading-snug min-h-[34px] flex items-center">
-          {value || <span className="text-slate-300 italic text-xs font-normal">Not set</span>}
+        <div className="w-full px-3 py-1.5 text-sm rounded-lg bg-slate-50 border border-slate-200/70 text-slate-800 font-medium leading-snug min-h-[34px] flex items-center justify-between gap-2">
+          {value ? (
+            isPassword ? (
+              <>
+                <span className="tracking-[0.25em] text-slate-500 select-none">
+                  {reveal ? value : '•'.repeat(Math.min(value.length, 10))}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setReveal(r => !r)}
+                  className="shrink-0 text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  {reveal ? (
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    </svg>
+                  ) : (
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  )}
+                </button>
+              </>
+            ) : value
+          ) : (
+            <span className="text-slate-300 italic text-xs font-normal">Not set</span>
+          )}
         </div>
       ) : children ? (
         <select
@@ -46,10 +75,29 @@ function EditField({ label, name, value, onChange, placeholder, textarea, type, 
           className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 resize-none placeholder:text-slate-300 transition-all font-medium text-slate-800 shadow-sm"
         />
       ) : (
-        <input
-          type={type || 'text'} name={name} value={value} onChange={onChange} placeholder={placeholder}
-          className="w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 placeholder:text-slate-300 transition-all font-medium text-slate-800 shadow-sm"
-        />
+        <div className={isPassword ? 'relative' : undefined}>
+          <input
+            type={resolvedType} name={name} value={value} onChange={onChange} placeholder={placeholder}
+            className={`w-full px-3 py-1.5 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 placeholder:text-slate-300 transition-all font-medium text-slate-800 shadow-sm${isPassword ? ' pr-9' : ''}`}
+          />
+          {isPassword && (
+            <button
+              type="button"
+              onClick={() => setReveal(r => !r)}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              {reveal ? (
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                </svg>
+              ) : (
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              )}
+            </button>
+          )}
+        </div>
       )}
     </div>
   );
@@ -98,12 +146,14 @@ export default function DSCDetailPanel({ dsc, threshold = 90, onClose, onDelete,
   const [showDeleteConfirm, setDelConfirm] = useState(false);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
-    label:        dsc.label        || '',
-    location:     dsc.location     || '',
-    assigned_to:  dsc.assigned_to  || '',
-    notes:        dsc.notes        || '',
-    token_label:  dsc.token_label  || '',
-    token_serial: dsc.token_serial || '',
+    label:         dsc.label         || '',
+    location:      dsc.location      || '',
+    assigned_to:   dsc.assigned_to   || '',
+    notes:         dsc.notes         || '',
+    token_label:   dsc.token_label   || '',
+    token_serial:  dsc.token_serial  || '',
+    token_pin:     dsc.token_pin     || '',
+    cert_password: dsc.cert_password || '',
   });
 
   useEffect(() => { setBannerHidden(false); }, [dsc.id]);
@@ -119,18 +169,20 @@ export default function DSCDetailPanel({ dsc, threshold = 90, onClose, onDelete,
   useEffect(() => {
     setEditing(false);
     setForm({
-      label:        dsc.label        || '',
-      location:     dsc.location     || '',
-      assigned_to:  dsc.assigned_to  || '',
-      notes:        dsc.notes        || '',
-      token_label:  dsc.token_label  || '',
-      token_serial: dsc.token_serial || '',
+      label:         dsc.label         || '',
+      location:      dsc.location      || '',
+      assigned_to:   dsc.assigned_to   || '',
+      notes:         dsc.notes         || '',
+      token_label:   dsc.token_label   || '',
+      token_serial:  dsc.token_serial  || '',
+      token_pin:     dsc.token_pin     || '',
+      cert_password: dsc.cert_password || '',
     });
   }, [dsc.id]);
 
   const set = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
-  const isDirty = ['label', 'location', 'assigned_to', 'notes', 'token_label', 'token_serial']
+  const isDirty = ['label', 'location', 'assigned_to', 'notes', 'token_label', 'token_serial', 'token_pin', 'cert_password']
     .some(k => (form[k] || '') !== (dsc[k] || ''));
 
   const handleSave = () => { onUpdate(dsc.id, form); setEditing(false); };
@@ -139,6 +191,7 @@ export default function DSCDetailPanel({ dsc, threshold = 90, onClose, onDelete,
       label: dsc.label || '', location: dsc.location || '',
       assigned_to: dsc.assigned_to || '', notes: dsc.notes || '',
       token_label: dsc.token_label || '', token_serial: dsc.token_serial || '',
+      token_pin: dsc.token_pin || '', cert_password: dsc.cert_password || '',
     });
     setEditing(false);
   };
@@ -312,6 +365,10 @@ export default function DSCDetailPanel({ dsc, threshold = 90, onClose, onDelete,
                   </EditField>
                 </div>
                 <EditField label="Token Serial" name="token_serial" value={form.token_serial} onChange={set} placeholder="HW12345678" readOnly={!editing} />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <EditField label="Token PIN" name="token_pin" value={form.token_pin} onChange={set} placeholder="e.g. 123456" type="password" readOnly={!editing} />
+                <EditField label="Cert Password" name="cert_password" value={form.cert_password} onChange={set} placeholder="Certificate password" type="password" readOnly={!editing} />
               </div>
             </FieldSection>
 
