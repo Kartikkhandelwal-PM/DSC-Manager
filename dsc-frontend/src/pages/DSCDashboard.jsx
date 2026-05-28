@@ -43,7 +43,7 @@ function daysColor(n, threshold) {
 
 /* ─── Settings Panel ───────────────────────────────────────────────────────── */
 
-const USER_EMAIL = 'vishnu.sharma@kdksoftware.com';
+const USER_EMAIL = 'Kartik.khandelwal@kdksoftware.com';
 
 function SettingsPanel({ threshold, onThresholdChange, extraEmails, onExtraEmailsChange, onClose }) {
   const [days,        setDays]       = useState(String(threshold));
@@ -246,8 +246,8 @@ function SettingsPanel({ threshold, onThresholdChange, extraEmails, onExtraEmail
 /* ─── User Menu (sidebar bottom) ───────────────────────────────────────────── */
 
 const USER = {
-  name:     'Vishnu Sharma',
-  email:    'vishnu.sharma@kdksoftware.com',
+  name:     'Kartik Khandelwal',
+  email:    'Kartik.khandelwal@kdksoftware.com',
   role:     'OWNER',
   firm:     'KDK Software',
   initials: 'VS',
