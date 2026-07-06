@@ -43,11 +43,38 @@ function daysColor(n, threshold) {
 
 /* ─── Settings Panel ───────────────────────────────────────────────────────── */
 
-const USER_EMAIL = 'Kartik.khandelwal@kdksoftware.com';
+const USER_EMAIL    = 'Kartik.khandelwal@kdksoftware.com';
+const USER_WHATSAPP = '+91 98765 43210';
 
-function SettingsPanel({ threshold, onThresholdChange, extraEmails, onExtraEmailsChange, onClose }) {
+/* Small pill switch used for the automated-reminder toggles */
+function Toggle({ checked, onChange, disabled }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => !disabled && onChange(!checked)}
+      style={{
+        width: 42, height: 24, borderRadius: 99, flexShrink: 0, padding: 0, border: 'none',
+        position: 'relative', cursor: disabled ? 'not-allowed' : 'pointer',
+        background: checked ? 'linear-gradient(135deg, #1d4ed8, #3b82f6)' : '#cbd5e1',
+        opacity: disabled ? 0.55 : 1, transition: 'background 0.2s ease',
+      }}
+    >
+      <span style={{
+        position: 'absolute', top: 2, left: checked ? 20 : 2,
+        width: 20, height: 20, borderRadius: '50%', background: 'white',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.3)', transition: 'left 0.2s ease',
+      }} />
+    </button>
+  );
+}
+
+function SettingsPanel({ threshold, onThresholdChange, extraEmails, onExtraEmailsChange, autoReminders, onAutoRemindersChange, onClose }) {
   const [days,        setDays]       = useState(String(threshold));
   const [localEmails, setLocalEmails] = useState(extraEmails);
+  const [localAuto,   setLocalAuto]  = useState(autoReminders);
   const [newEmail,    setNewEmail]   = useState('');
   const [daysErr,     setDaysErr]    = useState('');
   const [emailErr,    setEmailErr]   = useState('');
@@ -57,7 +84,10 @@ function SettingsPanel({ threshold, onThresholdChange, extraEmails, onExtraEmail
   const daysValid = days !== '' && !isNaN(daysNum) && daysNum >= 1 && daysNum <= 365;
 
   const isDirty = (daysValid && daysNum !== threshold) ||
-    JSON.stringify(localEmails) !== JSON.stringify(extraEmails);
+    JSON.stringify(localEmails) !== JSON.stringify(extraEmails) ||
+    JSON.stringify(localAuto) !== JSON.stringify(autoReminders);
+
+  const setAuto = patch => { setLocalAuto(a => ({ ...a, ...patch })); setSaved(false); };
 
   const addEmailToList = () => {
     const v = newEmail.trim().toLowerCase();
@@ -75,11 +105,10 @@ function SettingsPanel({ threshold, onThresholdChange, extraEmails, onExtraEmail
     setDaysErr('');
     onThresholdChange(daysNum);
     onExtraEmailsChange(localEmails);
+    onAutoRemindersChange(localAuto);
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };
-
-  const allEmails = [USER_EMAIL, ...localEmails];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -112,16 +141,6 @@ function SettingsPanel({ threshold, onThresholdChange, extraEmails, onExtraEmail
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
 
-          {/* ── Info banner ── */}
-          <div className="flex items-start gap-3 p-4 rounded-2xl bg-blue-50 border border-blue-100">
-            <svg className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-            </svg>
-            <p className="text-xs text-blue-700 leading-relaxed">
-              Email alerts will be sent to <span className="font-bold">{allEmails.length === 1 ? '1 address' : `${allEmails.length} addresses`}</span> below whenever a DSC has expired or is expiring within <span className="font-bold">{daysValid ? daysNum : threshold} days</span>.
-            </p>
-          </div>
-
           {/* ── Alert Threshold ── */}
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -153,35 +172,59 @@ function SettingsPanel({ threshold, onThresholdChange, extraEmails, onExtraEmail
             </div>
           </div>
 
-          {/* ── Reminder Recipients ── */}
+          {/* ── Your Contact Channels ── */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <div className="w-5 h-5 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
                 <svg className="w-3 h-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
                 </svg>
               </div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Reminder Recipients</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Your Contact Channels</p>
             </div>
             <div className="bg-white rounded-2xl border border-slate-200/80 p-4 space-y-2" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-              {/* Primary */}
+              <p className="text-xs text-slate-500 mb-1 leading-relaxed">These are the channels registered to your account. Reminders and updates are delivered here.</p>
+
+              {/* WhatsApp */}
               <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5">
-                <svg className="w-4 h-4 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-                </svg>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-slate-800 truncate">{USER_EMAIL}</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">Primary · cannot be removed</p>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'rgba(34,197,94,0.12)' }}>
+                  <svg className="w-4 h-4" style={{ color: '#16a34a' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                  </svg>
                 </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-slate-800 truncate">{USER_WHATSAPP}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">WhatsApp · messages are sent here</p>
+                </div>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0" style={{ background: '#dcfce7', color: '#166534' }}>REGISTERED</span>
               </div>
 
-              {/* Added emails */}
-              {localEmails.map(email => (
-                <div key={email} className="flex items-center gap-3 border border-slate-200 rounded-xl px-3.5 py-2.5">
-                  <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              {/* Email */}
+              <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'rgba(59,130,246,0.12)' }}>
+                  <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
                   </svg>
-                  <p className="text-xs font-semibold text-slate-700 flex-1 min-w-0 truncate">{email}</p>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-slate-800 truncate">{USER_EMAIL}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Email · mail is shared here</p>
+                </div>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0" style={{ background: '#dbeafe', color: '#1e40af' }}>REGISTERED</span>
+              </div>
+
+              {/* Alternate emails */}
+              {localEmails.map(email => (
+                <div key={email} className="flex items-center gap-3 border border-slate-200 rounded-xl px-3.5 py-2.5">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-slate-100">
+                    <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-slate-700 truncate">{email}</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Alternate email</p>
+                  </div>
                   <button onClick={() => { removeEmailFromList(email); setSaved(false); }} className="text-slate-300 hover:text-red-400 transition-colors shrink-0">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -190,13 +233,13 @@ function SettingsPanel({ threshold, onThresholdChange, extraEmails, onExtraEmail
                 </div>
               ))}
 
-              {/* Add input */}
+              {/* Add alternate email */}
               <div className="flex items-center gap-2 pt-1">
                 <input
                   type="email" value={newEmail}
                   onChange={e => { setNewEmail(e.target.value); setEmailErr(''); }}
                   onKeyDown={e => e.key === 'Enter' && addEmailToList()}
-                  placeholder="Add another email address…"
+                  placeholder="Add an alternate email address…"
                   className="flex-1 px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-400 focus:bg-white placeholder:text-slate-300 transition-all"
                 />
                 <button
@@ -210,6 +253,56 @@ function SettingsPanel({ threshold, onThresholdChange, extraEmails, onExtraEmail
                 </button>
               </div>
               {emailErr && <p className="text-xs text-red-500 mt-1">{emailErr}</p>}
+            </div>
+          </div>
+
+          {/* ── Automated Client Reminders ── */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-5 h-5 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
+                <svg className="w-3 h-3 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                </svg>
+              </div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Automated Client Reminders</p>
+            </div>
+            <div className="bg-white rounded-2xl border border-slate-200/80 p-4 space-y-3" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+              {/* Master toggle */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-slate-800">Notify clients automatically</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
+                    Send each client a reminder on their registered WhatsApp number and email before their DSC expires.
+                  </p>
+                </div>
+                <Toggle checked={localAuto.enabled} onChange={v => setAuto({ enabled: v })} />
+              </div>
+
+              {/* Channel toggles */}
+              <div className="pt-1 space-y-2" style={{ opacity: localAuto.enabled ? 1 : 0.5, transition: 'opacity 0.2s' }}>
+                {/* WhatsApp channel */}
+                <div className="flex items-center gap-3 border border-slate-200 rounded-xl px-3.5 py-2.5">
+                  <svg className="w-4 h-4 shrink-0" style={{ color: '#16a34a' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                  </svg>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-slate-800">WhatsApp</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Sent to the client’s registered number</p>
+                  </div>
+                  <Toggle checked={localAuto.whatsapp} disabled={!localAuto.enabled} onChange={v => setAuto({ whatsapp: v })} />
+                </div>
+                {/* Email channel */}
+                <div className="flex items-center gap-3 border border-slate-200 rounded-xl px-3.5 py-2.5">
+                  <svg className="w-4 h-4 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                  </svg>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-slate-800">Email</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Sent to the client’s registered email</p>
+                  </div>
+                  <Toggle checked={localAuto.email} disabled={!localAuto.enabled} onChange={v => setAuto({ email: v })} />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -534,7 +627,7 @@ function SidebarRow({ active, onClick, avatarContent, label, sub, alertCount, he
 
 /* ─── Stat Card ────────────────────────────────────────────────────────────── */
 
-function StatCard({ label, value, sub, icon, gradient, glowColor, delay = 0, onClick, active = false }) {
+function StatCard({ label, value, sub, icon, watermark, gradient, glowColor, delay = 0, onClick, active = false }) {
   const [hov, setHov] = useState(false);
   return (
     <div
@@ -559,9 +652,14 @@ function StatCard({ label, value, sub, icon, gradient, glowColor, delay = 0, onC
         cursor: 'pointer',
       }}
     >
-      {/* Decorative circle */}
-      <div style={{ position: 'absolute', right: -18, top: -18, width: 90, height: 90, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', right: 14, bottom: -24, width: 60, height: 60, borderRadius: '50%', background: 'rgba(255,255,255,0.05)', pointerEvents: 'none' }} />
+      {/* Illustration watermark */}
+      {watermark && (
+        <div style={{ position: 'absolute', right: -14, bottom: -14, width: 96, height: 96, opacity: 0.13, pointerEvents: 'none', zIndex: 0 }}>
+          <svg style={{ width: '100%', height: '100%', color: 'white' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+            {watermark}
+          </svg>
+        </div>
+      )}
 
       {/* Active filter indicator */}
       {active && (
@@ -577,10 +675,10 @@ function StatCard({ label, value, sub, icon, gradient, glowColor, delay = 0, onC
           <div style={{ width: 38, height: 38, borderRadius: 11, background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg style={{ width: 18, height: 18, color: 'white' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>{icon}</svg>
           </div>
-          <p style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.65)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</p>
+          <p style={{ fontSize: 10, fontWeight: 700, color: 'white', letterSpacing: '0.1em', textTransform: 'uppercase', textShadow: '0 1px 4px rgba(0,0,0,0.30)' }}>{label}</p>
         </div>
-        <p style={{ fontSize: 34, fontWeight: 800, color: 'white', lineHeight: 1, marginBottom: 5, fontVariantNumeric: 'tabular-nums' }}>{value}</p>
-        <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{sub}</p>
+        <p style={{ fontSize: 34, fontWeight: 800, color: 'white', lineHeight: 1, marginBottom: 5, fontVariantNumeric: 'tabular-nums', textShadow: '0 2px 8px rgba(0,0,0,0.30)' }}>{value}</p>
+        <p style={{ fontSize: 11, color: 'white', fontWeight: 600, textShadow: '0 1px 4px rgba(0,0,0,0.25)' }}>{sub}</p>
       </div>
     </div>
   );
@@ -786,6 +884,13 @@ export default function DSCDashboard() {
       return saved ? JSON.parse(saved) : [];
     } catch { return []; }
   });
+  const [autoReminders, setAutoReminders] = useState(() => {
+    const fallback = { enabled: false, whatsapp: true, email: true };
+    try {
+      const saved = localStorage.getItem('dsc_auto_reminders');
+      return saved ? { ...fallback, ...JSON.parse(saved) } : fallback;
+    } catch { return fallback; }
+  });
 
   const handleThresholdChange = days => {
     setThreshold(days);
@@ -795,6 +900,11 @@ export default function DSCDashboard() {
   const handleExtraEmailsChange = emails => {
     setExtraEmails(emails);
     localStorage.setItem('dsc_extra_emails', JSON.stringify(emails));
+  };
+
+  const handleAutoRemindersChange = settings => {
+    setAutoReminders(settings);
+    localStorage.setItem('dsc_auto_reminders', JSON.stringify(settings));
   };
 
   const activeClientObj = clients.find(c => c.id === activeClient);
@@ -926,32 +1036,36 @@ export default function DSCDashboard() {
             <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
               <StatCard label="Total" value={counts.total}
                 sub={activeClient === 'all' ? `across ${clientsWithDSCs} clients` : 'for this client'}
-                gradient="linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)"
-                glowColor="#2563eb" delay={0}
+                gradient="linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)"
+                glowColor="#818cf8" delay={0}
                 onClick={() => setStatus('All')}
                 active={statusFilter === 'All'}
                 icon={<path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />}
+                watermark={<path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />}
               />
               <StatCard label="Active" value={counts.active} sub="valid certificates"
-                gradient="linear-gradient(135deg, #065f46 0%, #059669 100%)"
-                glowColor="#059669" delay={60}
+                gradient="linear-gradient(135deg, #34d399 0%, #22d3ee 100%)"
+                glowColor="#2dd4bf" delay={60}
                 onClick={() => setStatus(s => s === 'Active' ? 'All' : 'Active')}
                 active={statusFilter === 'Active'}
                 icon={<path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />}
+                watermark={<path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />}
               />
               <StatCard label="Expiring Soon" value={counts.expiring} sub={`within ${alertThreshold} days`}
-                gradient="linear-gradient(135deg, #92400e 0%, #d97706 100%)"
-                glowColor="#d97706" delay={120}
+                gradient="linear-gradient(135deg, #fbbf24 0%, #fb923c 100%)"
+                glowColor="#f97316" delay={120}
                 onClick={() => setStatus(s => s === 'Expiring Soon' ? 'All' : 'Expiring Soon')}
                 active={statusFilter === 'Expiring Soon'}
                 icon={<path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />}
+                watermark={<path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />}
               />
               <StatCard label="Expired" value={counts.expired} sub="require renewal"
-                gradient="linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%)"
-                glowColor="#dc2626" delay={180}
+                gradient="linear-gradient(135deg, #f87171 0%, #fb7185 100%)"
+                glowColor="#f43f5e" delay={180}
                 onClick={() => setStatus(s => s === 'Expired' ? 'All' : 'Expired')}
                 active={statusFilter === 'Expired'}
                 icon={<path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />}
+                watermark={<path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />}
               />
             </div>
 
@@ -1120,6 +1234,8 @@ export default function DSCDashboard() {
           onThresholdChange={handleThresholdChange}
           extraEmails={extraEmails}
           onExtraEmailsChange={handleExtraEmailsChange}
+          autoReminders={autoReminders}
+          onAutoRemindersChange={handleAutoRemindersChange}
           onClose={() => setSettings(false)}
         />
       )}

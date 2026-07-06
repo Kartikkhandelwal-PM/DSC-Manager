@@ -531,7 +531,7 @@ function StepDetect({ onDetected, onBack }) {
         <p className="text-sm font-semibold text-red-800 mb-2">Your token has been locked for security.</p>
         <p className="text-xs text-red-700 mb-2">Contact your DSC provider to perform an admin (SO) PIN reset:</p>
         <ul className="space-y-1.5">
-          {[['eMudhra', '1800-103-7778'], ['Capricorn', '0265-6111200'], ['NSDL', '022-24994200'], ['Sify', '1800-229-5559']].map(([name, num]) => (
+          {[['eMudhra', '1800-103-7778'], ['NSDL', '022-24994200'], ['Sify', '1800-229-5559']].map(([name, num]) => (
             <li key={name} className="flex items-center gap-2 text-xs text-red-700">
               <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
               <span className="font-semibold">{name}:</span> {num}

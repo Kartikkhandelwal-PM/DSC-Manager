@@ -130,9 +130,9 @@ function FieldSection({ title, iconPath, badge, children }) {
 const VALIDITY_DAYS = 3 * 365;
 
 const HEADER = {
-  'Active':        { bg: 'linear-gradient(150deg, #0d1b3e 0%, #1e3a8a 60%, #1d4ed8 100%)', progress: 'from-blue-400 to-sky-300',     ring: 'bg-blue-400/10'  },
-  'Expiring Soon': { bg: 'linear-gradient(150deg, #431407 0%, #9a3412 60%, #c2410c 100%)', progress: 'from-orange-400 to-amber-300', ring: 'bg-orange-400/10' },
-  'Expired':       { bg: 'linear-gradient(150deg, #450a0a 0%, #991b1b 60%, #dc2626 100%)', progress: 'from-red-400 to-rose-300',     ring: 'bg-red-400/10'   },
+  'Active':        { bg: 'linear-gradient(150deg, #60a5fa 0%, #a78bfa 100%)', progress: 'from-violet-200 to-blue-100',  ring: 'bg-violet-200/30' },
+  'Expiring Soon': { bg: 'linear-gradient(150deg, #fbbf24 0%, #fb923c 100%)', progress: 'from-orange-200 to-amber-100', ring: 'bg-orange-200/30' },
+  'Expired':       { bg: 'linear-gradient(150deg, #f87171 0%, #fb7185 100%)', progress: 'from-rose-200 to-pink-100',    ring: 'bg-rose-200/30'   },
 };
 
 export default function DSCDetailPanel({ dsc, threshold = 90, onClose, onDelete, onUpdate }) {
@@ -230,23 +230,23 @@ export default function DSCDetailPanel({ dsc, threshold = 90, onClose, onDelete,
             {/* Row 2 — title + days-left */}
             <div className="flex items-end justify-between gap-4">
               <div className="min-w-0 flex-1">
-                <h2 className="text-lg font-black text-white leading-tight truncate mb-0.5">
+                <h2 className="text-lg font-black text-white leading-tight truncate mb-0.5" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.30)' }}>
                   {dsc.label || dsc.holder_name}
                 </h2>
-                <p className="text-xs text-white/50 truncate">
+                <p className="text-xs text-white font-medium truncate" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.25)' }}>
                   {dsc.holder_name} · {dsc.organization}
                 </p>
               </div>
               <div className="shrink-0 text-right pb-0.5">
                 <div className="flex items-baseline gap-1 justify-end">
-                  <span className="text-2xl font-black text-white tabular-nums leading-none">
+                  <span className="text-2xl font-black text-white tabular-nums leading-none" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.30)' }}>
                     {daysLeft <= 0 ? '0' : daysLeft}
                   </span>
-                  <span className="text-xs text-white/50 font-medium mb-0.5">
+                  <span className="text-xs text-white font-semibold mb-0.5" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.25)' }}>
                     {daysLeft <= 0 ? 'expired' : 'days'}
                   </span>
                 </div>
-                <p className="text-[10px] text-white/35 mt-0.5 font-medium">
+                <p className="text-[10px] text-white font-medium mt-0.5" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.25)', opacity: 0.85 }}>
                   {daysLeft <= 0 ? 'Renewal overdue' : 'remaining'}
                 </p>
               </div>
@@ -254,15 +254,15 @@ export default function DSCDetailPanel({ dsc, threshold = 90, onClose, onDelete,
 
             {/* Row 3 — progress bar + dates */}
             <div className="mt-3">
-              <div className="h-1 w-full rounded-full bg-white/12 overflow-hidden mb-1.5">
+              <div className="h-1 w-full rounded-full bg-white/20 overflow-hidden mb-1.5">
                 <div
                   className={`h-full rounded-full bg-gradient-to-r ${h.progress}`}
                   style={{ width: `${progress}%`, transition: 'width 0.8s cubic-bezier(.4,0,.2,1)' }}
                 />
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-white/30 font-medium">Issued {fmt(dsc.issue_date)}</span>
-                <span className="text-[10px] text-white/30 font-medium">Expires {fmt(dsc.expiry_date)}</span>
+                <span className="text-[10px] text-white font-medium" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.25)', opacity: 0.80 }}>Issued {fmt(dsc.issue_date)}</span>
+                <span className="text-[10px] text-white font-medium" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.25)', opacity: 0.80 }}>Expires {fmt(dsc.expiry_date)}</span>
               </div>
             </div>
           </div>
@@ -473,14 +473,6 @@ export default function DSCDetailPanel({ dsc, threshold = 90, onClose, onDelete,
                 >
                   Edit Details
                 </button>
-                {(status === 'Expiring Soon' || status === 'Expired') && (
-                  <button
-                    className="px-5 py-2 text-white text-sm font-bold rounded-xl transition-all active:scale-95 whitespace-nowrap"
-                    style={{ background: 'linear-gradient(135deg, #1d4ed8, #3b82f6)', boxShadow: '0 2px 10px rgba(29,78,216,0.3)' }}
-                  >
-                    Renew via Capricorn
-                  </button>
-                )}
               </div>
             </div>
           )}

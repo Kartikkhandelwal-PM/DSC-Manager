@@ -24,7 +24,11 @@
     "appId": "com.kdksoftware.dsc-agent",
     "productName": "KDK DSC Agent",
     "copyright": "Copyright © 2025 KDK Software Pvt Ltd",
-    "files": ["main.js", "src/**/*", "assets/**/*"],
+    "files": [
+      "main.js",
+      "src/**/*",
+      "assets/**/*"
+    ],
     "win": {
       "target": "zip",
       "signAndEditExecutable": false,
@@ -42,5 +46,10 @@
     "linux": {
       "target": "AppImage"
     }
+  },
+  "allowScripts": {
+    "electron@31.7.7": true,
+    "lzma-native@8.0.6": true,
+    "pkcs11js@2.1.6": true
   }
 }
